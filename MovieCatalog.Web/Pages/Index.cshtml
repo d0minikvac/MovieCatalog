@@ -1,0 +1,71 @@
+﻿@page
+@using MovieCatalogApi.Entities
+@using MovieCatalogApi.Services
+@using Utils
+@model IndexModel
+@inject IMovieCatalogDataService MovieCatalogDataService
+@{
+    ViewData["Title"] = "Home page";
+    var genresWithCounts = await MovieCatalogDataService.GetGenresWithTitleCountsAsync();
+    var filter = new TitleFilter
+    {
+        TitleTypes = new[] { TitleType.Movie },
+        StartYearMax = DateTime.Now.Year
+    };
+    var titles = await MovieCatalogDataService.GetTitlesAsync(20, 1, filter, TitleSort.ReleaseYear, true);
+}
+
+<div class="row">
+    <div class="col-md-4 col-12  text-center" style="font-size: 0.8em">
+        <div>
+            @foreach (var genre in genresWithCounts)
+            {
+                    <span class="text-nowrap" style="font-size: 1.2em;">
+                    @genre.Key.Name (<small class="text-muted">@genre.Value</small>)
+                    </span>
+            }
+        </div>
+        <hr class="d-block d-md-none" />
+    </div>
+    <div class="col-md-8 col-12">
+        <div class="row">
+            @foreach (var title in titles.Results)
+            {
+                    <div class="col-6 col-lg-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="/">
+                                    <h5>
+                                    @title.PrimaryTitle
+                                    @if (title.OriginalTitle != title.PrimaryTitle)
+                                    {
+                                        <text> (<small>@title.OriginalTitle</small>)</text>
+                                    }
+                                    @if (title.StartYear.HasValue)
+                                    {
+                                        <text> (<small>@title.StartYear</small></text>
+                                        @if (title.EndYear.HasValue)
+                                        {
+                                            <text> - @title.EndYear</text>
+                                        }
+                                        <text>)</text>
+                                    }
+                                    </h5>
+                                </a>
+                                <h6 class="text-muted"><i>Title Type: @title.TitleType</i></h6>
+                                @if (title.TitleGenres.Any())
+                                {
+                                    <span class="badge rounded-pill bg-primary text-nowrap">
+                                        @foreach (var genre in title.TitleGenres)
+                                        {
+                                            @genre.Genre.Name
+                                        }
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+            }
+        </div>
+    </div>
+</div>
