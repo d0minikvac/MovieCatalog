@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<MovieCatalogDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DBU47SQ1")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));
 builder.Services.AddScoped<IMovieCatalogDataService, MovieCatalogDataService>();
 
 var app = builder.Build();
